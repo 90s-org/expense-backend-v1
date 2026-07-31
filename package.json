@@ -1,0 +1,19 @@
+{
+  "name": "expense-backend-v1",
+  "version": "1.0.0",
+  "description": "Expense Tracker backend (Node/Express) — REST API + Prometheus metrics + structured logs",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0",
+    "prom-client": "^15.1.3",
+    "pino": "^9.3.2",
+    "uuid": "^10.0.0",
+    "dotenv": "^16.4.5"
+  }
+}
