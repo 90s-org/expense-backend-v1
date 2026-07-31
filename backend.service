@@ -1,0 +1,23 @@
+# Deploy to: /etc/systemd/system/backend.service
+
+[Unit]
+Description=Expense Tracker backend (Node/Express)
+After=network.target
+
+[Service]
+Type=simple
+User=expense-backend
+Group=expense-backend
+WorkingDirectory=/app
+EnvironmentFile=/app/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+
+# Hardening -- app only needs to read its own directory and talk out over the network.
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

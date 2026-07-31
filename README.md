@@ -13,6 +13,48 @@ npm start
 
 Requires the `expense-mysql-v1` schema already loaded on the target MySQL host.
 
+## Run as a systemd service (backend EC2)
+
+Deploys the app to `/opt/expense-backend` and runs it under a dedicated
+system user, managed by `expense-backend.service`.
+
+```bash
+# one-time setup
+sudo useradd --system --shell /sbin/nologin --no-create-home expense-backend
+sudo mkdir -p /opt/expense-backend
+sudo cp -r src package.json expense-backend.service /opt/expense-backend/
+sudo cp .env.example /opt/expense-backend/.env   # then edit DB_HOST/DB_PASSWORD etc.
+
+cd /opt/expense-backend
+sudo npm install --omit=dev
+sudo chown -R expense-backend:expense-backend /opt/expense-backend
+sudo chmod 600 /opt/expense-backend/.env
+
+sudo cp expense-backend.service /etc/systemd/system/expense-backend.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now expense-backend
+```
+
+**Start / stop / restart / status:**
+```bash
+sudo systemctl start expense-backend
+sudo systemctl stop expense-backend
+sudo systemctl restart expense-backend
+sudo systemctl status expense-backend --no-pager
+```
+
+**Logs** (the app's own pino JSON lines, captured by journald):
+```bash
+sudo journalctl -u expense-backend -f
+```
+
+**After editing `.env` or the unit file**, `daemon-reload` then `restart` —
+a plain `restart` alone won't pick up unit-file changes:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart expense-backend
+```
+
 ## Endpoints
 
 ### Categories
@@ -72,4 +114,5 @@ src/
     debug.js
   app.js
   server.js
+expense-backend.service   # systemd unit, deploy to /etc/systemd/system/
 ```
